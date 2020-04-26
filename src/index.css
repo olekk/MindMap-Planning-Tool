@@ -1,0 +1,22 @@
+.group, .goal, .sub {
+  padding: 10px;
+  box-sizing: border-box; }
+
+.group {
+  display: flex;
+  flex-direction: column;
+  align-items: center; }
+
+.goal {
+  border: 1px solid blue;
+  text-align: center;
+  width: fit-content; }
+
+.sub {
+  display: flex;
+  justify-content: space-around; }
+
+button {
+  margin: 2px 0; }
+
+/*# sourceMappingURL=index.css.map */
