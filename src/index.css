@@ -1,7 +1,8 @@
 body {
-  margin: 0; }
+  margin: 0;
+  position: absolute; }
 
-#view {
+.view {
   position: relative;
   width: calc(100vw - 200px);
   height: calc(100vh - 200px);
@@ -9,27 +10,27 @@ body {
   margin: 100px;
   outline: 1px dashed black;
   overflow: hidden; }
-  #view .mindmap {
+  .view .mindmap {
     display: flex;
     align-items: center;
     justify-content: center; }
-    #view .mindmap .group, #view .mindmap .goal, #view .mindmap .sub {
+    .view .mindmap .group, .view .mindmap .goal, .view .mindmap .sub {
       box-sizing: border-box; }
-    #view .mindmap .group {
+    .view .mindmap .group {
       display: flex;
       flex-direction: column;
       align-items: center;
       margin: 50px 30px; }
-    #view .mindmap .goal {
+    .view .mindmap .goal {
       border: 1px solid blue;
       text-align: center;
       width: fit-content;
       background-color: white;
       padding: 10px; }
-    #view .mindmap .sub {
+    .view .mindmap .sub {
       display: flex;
       justify-content: space-around; }
-  #view .viewcontrol {
+  .view .viewcontrol {
     position: absolute;
     bottom: 0;
     right: 0;

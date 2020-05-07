@@ -8,17 +8,18 @@ class ViewControl extends React.Component {
     return (
       <div className="viewcontrol">
         <span role="img" aria-label="zoom">&#128269;</span>{Math.floor(this.props.zoom*100)+"%"}
-        <button onClick={()=> this.props.viewControl('+')}>+</button>
-        <button onClick={()=> this.props.viewControl('-')}>-</button>
-        <button onClick={()=> this.props.viewControl('<')}>&larr;</button>
-        <button onClick={()=> this.props.viewControl('up')}>&uarr;</button>
-        <button onClick={()=> this.props.viewControl('down')}>&darr;</button>
-        <button onClick={()=> this.props.viewControl('>')}>&rarr;</button>
+        <button onMouseDown={()=> this.props.viewControl('+')}>+</button>
+        <button onMouseDown={()=> this.props.viewControl('-')}>-</button>
+        <button onMouseDown={()=> this.props.viewControl('<')}>&larr;</button>
+        <button onMouseDown={()=> this.props.viewControl('up')}>&uarr;</button>
+        <button onMouseDown={()=> this.props.viewControl('down')}>&darr;</button>
+        <button onMouseDown={()=> this.props.viewControl('>')}>&rarr;</button>
 
       </div>
     );
   }
 }
+
 class Goal extends React.Component {
   constructor(props) {
     super(props);
@@ -107,7 +108,7 @@ class MindMap extends React.Component {
     }
   }
 
-componentDidMount() {
+componentDidUpdate() {
   // let viewEl = document.getElementById("view");
   // viewEl.addEventListener('scroll', this.handleScroll);
   // viewEl.scrollLeft = 2500-viewEl.innerWidth/2;
@@ -117,31 +118,41 @@ componentDidMount() {
 viewControl(f) {
   let newView = this.state.view;
 
-  switch(f) {
-    case '+': {
-      newView.zoom+=0.1;
-    break; }
-    case '-': {
-      newView.zoom-=0.1;
-    break; }
-    case '<': {
-      newView.x+=10;
-    break; }
-    case '>': {
-      newView.x-=10;
-    break; }
-    case 'up': {
-      newView.y+=10;
-    break; }
-    case 'down': {
-      newView.y-=10;
-    break; }
-    default : {
-
+  let act = function(that) {
+    switch(f) {
+      case '+': {
+        if(newView.zoom<2) newView.zoom*=1.01;
+      break; }
+      case '-': {
+        if(newView.zoom>0.1) newView.zoom*=0.99;
+      break; }
+      case '<': {
+        if(newView.x<2000) newView.x+=2;
+      break; }
+      case '>': {
+        if(newView.x>-2000) newView.x-=2;
+      break; }
+      case 'up': {
+        if(newView.y<2000) newView.y+=2;
+      break; }
+      case 'down': {
+        if(newView.x>-2000) newView.y-=2;
+      break; }
+      default : {
+      }
     }
+    that.setState({view:newView});
   }
 
-  this.setState({view:newView});
+  let stop = function() {
+    clearInterval(interval);
+    document.body.removeEventListener('mouseup', stop);
+  }
+
+  act(this);
+  let interval = setInterval(()=>{act(this)}, 10);
+  document.body.addEventListener('mouseup', stop);
+  
 }
 
 blankGoal(_id) {
@@ -201,7 +212,7 @@ action(_id, f, options) {
 
   render() {
     return ( 
-      <div id = "view" >
+      <div className = "view" >
         <div className="mindmap" style={{transform: "translate("+this.state.view.x+"px, "+this.state.view.y+"px) scale("+this.state.view.zoom+")"}}>
           <Goal 
             key={0}
