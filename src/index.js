@@ -2,6 +2,23 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+
+class ViewControl extends React.Component {
+  render() {
+    return (
+      <div className="viewcontrol">
+        <span role="img" aria-label="zoom">&#128269;</span>{Math.floor(this.props.zoom*100)+"%"}
+        <button onClick={()=> this.props.viewControl('+')}>+</button>
+        <button onClick={()=> this.props.viewControl('-')}>-</button>
+        <button onClick={()=> this.props.viewControl('<')}>&larr;</button>
+        <button onClick={()=> this.props.viewControl('up')}>&uarr;</button>
+        <button onClick={()=> this.props.viewControl('down')}>&darr;</button>
+        <button onClick={()=> this.props.viewControl('>')}>&rarr;</button>
+
+      </div>
+    );
+  }
+}
 class Goal extends React.Component {
   constructor(props) {
     super(props);
@@ -66,7 +83,7 @@ class Goal extends React.Component {
   }
 }
 
-class App extends React.Component {
+class MindMap extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -78,10 +95,67 @@ class App extends React.Component {
           notes: [],
           complete: false,
           openingDate: new Date(),
+          x: 0,
+          y: 0,
         }]
-      }
+      },
+      view: {
+        zoom: 1,
+        y: 0,
+        x: 0,
+        }
     }
   }
+
+componentDidMount() {
+  // let viewEl = document.getElementById("view");
+  // viewEl.addEventListener('scroll', this.handleScroll);
+  // viewEl.scrollLeft = 2500-viewEl.innerWidth/2;
+  // viewEl.scrollTop = 2500-viewEl.innerHeight/3;
+}
+
+viewControl(f) {
+  let newView = this.state.view;
+
+  switch(f) {
+    case '+': {
+      newView.zoom+=0.1;
+    break; }
+    case '-': {
+      newView.zoom-=0.1;
+    break; }
+    case '<': {
+      newView.x+=10;
+    break; }
+    case '>': {
+      newView.x-=10;
+    break; }
+    case 'up': {
+      newView.y+=10;
+    break; }
+    case 'down': {
+      newView.y-=10;
+    break; }
+    default : {
+
+    }
+  }
+
+  this.setState({view:newView});
+}
+
+blankGoal(_id) {
+  return {
+    id: _id,
+    title: 'Tytuł',
+    subGoals: [],
+    notes: [],
+    complete: false,
+    openingDate: new Date(),
+    x: 0,
+    y: 0,
+  }
+}
 
 action(_id, f, options) {
 
@@ -89,14 +163,7 @@ action(_id, f, options) {
   let chosenGoal = goalsCopy.filter(res=>res.id===_id)[0];
   switch(f) {
     case "addNewGoal": {
-      let newGoal = {
-        id: Math.max(...goalsCopy.map(item => Number(item.id)))+1,      //newGoal ma id o jedna wieksze od najwiekszego istniejacego
-        title: 'Tytuł',
-        subGoals: [],
-        notes: [],
-        complete: false,
-        openingDate: new Date(),
-      }
+      let newGoal = this.blankGoal(Math.max(...goalsCopy.map(item => Number(item.id)))+1);
       
       chosenGoal.subGoals.push(newGoal.id);
       goalsCopy.push(newGoal);
@@ -113,7 +180,7 @@ action(_id, f, options) {
       function recDelete(id) {
         toDelete.push(id);
         let subGoals = goalsCopy.filter(res=>res.id===id)[0].subGoals;
-        if(subGoals.length) subGoals.forEach(item=> {recDelete(item)});
+        if(subGoals.length) subGoals.forEach(item=> {recDelete(item)});       //rekursywne dodawanie wszystkich id potomnych początkowego
         else return;
       };
       recDelete(_id);
@@ -133,17 +200,20 @@ action(_id, f, options) {
 }
 
   render() {
-    console.log(this.state.map);
     return ( 
-      <div className = "App" >
-        <Goal 
-          key={0}
-          id={0}
-          goalsArray={this.state.map.goals}
-          action={(_id, f, options) => this.action(_id, f, options)}
+      <div id = "view" >
+        <div className="mindmap" style={{transform: "translate("+this.state.view.x+"px, "+this.state.view.y+"px) scale("+this.state.view.zoom+")"}}>
+          <Goal 
+            key={0}
+            id={0}
+            goalsArray={this.state.map.goals}
+            action={(_id, f, options) => this.action(_id, f, options)}
+          />
+        </div>
+        <ViewControl 
+          viewControl={(f)=> this.viewControl(f)}
+          zoom={this.state.view.zoom}
         />
-        
-
       </div>
     );
   }
@@ -152,7 +222,7 @@ action(_id, f, options) {
 
 ReactDOM.render(
   //<React.StrictMode>
-    <App />,
+    <MindMap />,
   //</React.StrictMode>,
   document.getElementById('root')
 );
