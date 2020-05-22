@@ -4,10 +4,9 @@ body {
 
 .view {
   position: relative;
-  width: calc(100vw - 200px);
-  height: calc(100vh - 200px);
+  width: 100vw;
+  height: 100vh;
   box-sizing: border-box;
-  margin: 100px;
   outline: 1px dashed black;
   overflow: hidden; }
   .view .mindmap {
@@ -39,3 +38,6 @@ body {
 
 button {
   margin: 2px 0; }
+  button::selection {
+    color: inherit;
+    background: inherit; }
